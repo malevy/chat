@@ -49,7 +49,7 @@ public class WebsocketConnectionHandler extends TextWebSocketHandler {
         log.info("received {} bytes from {}", receivedMessage.getPayloadLength(), session.getId());
 
         final ChatMessage received = mapper.readValue(receivedMessage.getPayload(), ChatMessage.class);
-        final var message = ChatMessage.populateFrom(received);
+        final var message = ChatMessage.populateFrom(received, (String) session.getAttributes().get("username"));
         final var newMessage = new TextMessage(mapper.writeValueAsString(message));
 
         for (WebSocketSession wss : sessions) {

@@ -16,13 +16,15 @@ public class ChatMessage {
     private String type;
     private String message;
     private Instant timestamp;
+    private String username;
 
-    public static ChatMessage populateFrom(ChatMessage source) {
+    public static ChatMessage populateFrom(ChatMessage source, String username) {
         ChatMessage message = new ChatMessage();
         message.type = source.type;
         message.message = source.message;
         message.timestamp = source.timestamp;
         message.id = source.id;
+        message.username = username;
         if (!StringUtils.hasText(message.id)) {
             message.id = UUID.randomUUID().toString();
         }
