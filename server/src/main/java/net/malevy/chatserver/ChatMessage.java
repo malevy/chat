@@ -33,4 +33,14 @@ public class ChatMessage {
         }
         return message;
     }
+    
+    public static ChatMessage createSystemMessage(String messageText) {
+        ChatMessage message = new ChatMessage();
+        message.id = UUID.randomUUID().toString();
+        message.type = "system";
+        message.message = messageText;
+        message.username = "System";
+        message.timestamp = Instant.now();
+        return message;
+    }
 }

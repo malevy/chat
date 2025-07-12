@@ -33,14 +33,20 @@ public class WebsocketConnectionHandler extends TextWebSocketHandler {
         String username = Objects.requireNonNullElse(getUsernameFromUri(session.getUri()), "{unknown}");
         session.getAttributes().put("username", username);
         log.info("{} ({}) connected", username, session.getId());
+        
+        // Send system message to all clients about user joining
+        broadcastMessage(ChatMessage.createSystemMessage(username + " joined the chat"));
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         super.afterConnectionClosed(session, status);
-        sessions.remove(session);
         final var username = session.getAttributes().get("username");
+        sessions.remove(session);
         log.info("{} ({}) disconnected", username, session.getId());
+        
+        // Send system message to remaining clients about user leaving
+        broadcastMessage(ChatMessage.createSystemMessage(username + " left the chat"));
     }
 
     @Override
@@ -50,20 +56,27 @@ public class WebsocketConnectionHandler extends TextWebSocketHandler {
 
         final ChatMessage received = mapper.readValue(receivedMessage.getPayload(), ChatMessage.class);
         final var message = ChatMessage.populateFrom(received, (String) session.getAttributes().get("username"));
-        final var newMessage = new TextMessage(mapper.writeValueAsString(message));
-
-        for (WebSocketSession wss : sessions) {
-            try {
-                wss.sendMessage(newMessage);
-            } catch (IOException e) {
-                log.error("failed to send receivedMessage to {}", wss.getId(), e);
-            }
-        }
+        broadcastMessage(message);
     }
 
     private String getUsernameFromUri(URI uri) {
         final var components = UriComponentsBuilder.fromUri(uri).build();
         if (!components.getQueryParams().containsKey("username")) return null;
         return components.getQueryParams().get("username").getFirst();
+    }
+    
+    private void broadcastMessage(ChatMessage message) {
+        try {
+            TextMessage textMessage = new TextMessage(mapper.writeValueAsString(message));
+            for (WebSocketSession session : sessions) {
+                try {
+                    session.sendMessage(textMessage);
+                } catch (IOException e) {
+                    log.error("Failed to send message to {}", session.getId(), e);
+                }
+            }
+        } catch (Exception e) {
+            log.error("Failed to serialize message", e);
+        }
     }
 }
