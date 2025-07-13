@@ -1,0 +1,27 @@
+# Claude Code local data
+.claude/
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+*/target/
+*/node_modules/
+*/dist/
+*/build/
+
+# Log files
+*.log
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
