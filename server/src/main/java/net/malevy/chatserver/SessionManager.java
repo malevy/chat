@@ -30,7 +30,8 @@ public class SessionManager {
         sessions.remove(session);
     }
 
-    public void broadcastMessage(ChatMessage message) {
+    
+    public void broadcastToLocalSessions(ChatMessage message) {
         try {
             TextMessage textMessage = new TextMessage(mapper.writeValueAsString(message));
             for (WebSocketSession session : sessions) {

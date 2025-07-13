@@ -3,6 +3,7 @@ package net.malevy.chatserver;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.util.StdDateFormat;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.util.StringUtils;
 
@@ -11,12 +12,14 @@ import java.util.UUID;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class ChatMessage {
     private String id;
     private String type;
     private String message;
     private Instant timestamp;
     private String username;
+    private String nodeId;
 
     public static ChatMessage populateFrom(ChatMessage source, String username) {
         ChatMessage message = new ChatMessage();

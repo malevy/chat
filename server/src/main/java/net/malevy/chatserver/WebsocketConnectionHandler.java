@@ -18,10 +18,12 @@ public class WebsocketConnectionHandler extends TextWebSocketHandler {
 
     private final ObjectMapper mapper;
     private final SessionManager sessionManager;
+    private final BroadcastService broadcastService;
 
-    public WebsocketConnectionHandler(ObjectMapper mapper, SessionManager sessionManager) {
+    public WebsocketConnectionHandler(ObjectMapper mapper, SessionManager sessionManager, BroadcastService broadcastService) {
         this.mapper = mapper;
         this.sessionManager = sessionManager;
+        this.broadcastService = broadcastService;
     }
 
     @Override
@@ -33,7 +35,7 @@ public class WebsocketConnectionHandler extends TextWebSocketHandler {
         sessionManager.addSession(session);
 
         // Send system message to all clients about user joining
-        sessionManager.broadcastMessage(ChatMessage.createSystemMessage(username + " joined the chat"));
+        broadcastService.broadcastMessage(ChatMessage.createSystemMessage(username + " joined the chat"));
     }
 
     @Override
@@ -44,7 +46,7 @@ public class WebsocketConnectionHandler extends TextWebSocketHandler {
         log.info("{} ({}) disconnected", username, session.getId());
         
         // Send system message to remaining clients about user leaving
-        sessionManager.broadcastMessage(ChatMessage.createSystemMessage(username + " left the chat"));
+        broadcastService.broadcastMessage(ChatMessage.createSystemMessage(username + " left the chat"));
     }
 
     @Override
@@ -54,7 +56,7 @@ public class WebsocketConnectionHandler extends TextWebSocketHandler {
 
         final ChatMessage received = mapper.readValue(receivedMessage.getPayload(), ChatMessage.class);
         final var message = ChatMessage.populateFrom(received, (String) session.getAttributes().get("username"));
-        sessionManager.broadcastMessage(message);
+        broadcastService.broadcastMessage(message);
     }
 
     private String getUsernameFromUri(URI uri) {
