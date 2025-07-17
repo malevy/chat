@@ -1,7 +1,5 @@
-package net.malevy.chatserver;
+package net.malevy.chatserver.models;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.databind.util.StdDateFormat;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

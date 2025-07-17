@@ -1,6 +1,8 @@
-package net.malevy.chatserver;
+package net.malevy.chatserver.messaging;
 
 import lombok.extern.slf4j.Slf4j;
+import net.malevy.chatserver.models.ChatMessage;
+import net.malevy.chatserver.websockets.SessionManager;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 

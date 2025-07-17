@@ -1,8 +1,5 @@
 package net.malevy.chatserver.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import net.malevy.chatserver.SessionManager;
-import net.malevy.chatserver.WebsocketConnectionHandler;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;

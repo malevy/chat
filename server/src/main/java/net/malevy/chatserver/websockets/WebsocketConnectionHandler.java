@@ -1,7 +1,9 @@
-package net.malevy.chatserver;
+package net.malevy.chatserver.websockets;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import net.malevy.chatserver.models.ChatMessage;
+import net.malevy.chatserver.messaging.BroadcastService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
