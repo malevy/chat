@@ -24,7 +24,7 @@ public class ClusterBroadcastService implements BroadcastService {
     private final SessionManager sessionManager;
     private final ChannelTopic chatTopic;
 
-    public ClusterBroadcastService(RedisTemplate<String, Object> redisTemplate, 
+    public ClusterBroadcastService(RedisTemplate<String, Object> redisTemplate,
                                  RedisMessageListenerContainer listenerContainer,
                                  ObjectMapper objectMapper,
                                  SessionManager sessionManager) {
@@ -40,19 +40,9 @@ public class ClusterBroadcastService implements BroadcastService {
         // Subscribe to Redis messages
         listenerContainer.addMessageListener((message, pattern) -> {
             try {
-                // Redis template with Jackson2JsonRedisSerializer will deserialize automatically
-                Object deserializedMessage = redisTemplate.getValueSerializer().deserialize(message.getBody());
-                log.info("Received Redis message: {}", deserializedMessage);
-                
-                ChatMessage chatMessage;
-                if (deserializedMessage instanceof ChatMessage) {
-                    chatMessage = (ChatMessage) deserializedMessage;
-                } else {
-                    // Fallback to manual JSON parsing if needed
-                    String messageBody = new String(message.getBody());
-                    chatMessage = objectMapper.readValue(messageBody, ChatMessage.class);
-                }
-                
+
+                ChatMessage chatMessage = objectMapper.readValue(message.getBody(), ChatMessage.class);
+
                 // Skip messages from this node to avoid infinite loop
                 if (nodeId.equals(chatMessage.getNodeId())) {
                     log.debug("Skipping message from same node: {}", nodeId);
