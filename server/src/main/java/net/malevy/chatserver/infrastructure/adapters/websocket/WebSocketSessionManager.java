@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Component
@@ -21,21 +22,26 @@ public class WebSocketSessionManager implements SessionManager {
     private final List<WebSocketSession> sessions = Collections.synchronizedList(new ArrayList<>());
 
     public WebSocketSessionManager(ObjectMapper mapper) {
-        this.mapper = mapper;
+
+        this.mapper = Objects.requireNonNull(mapper, "mapper cannot be null") ;
     }
 
     @Override
     public void addSession(WebSocketSession session) {
+        Objects.requireNonNull(session, "session cannot be null");
+        if (sessions.contains(session)) return;
         sessions.add(session);
     }
 
     @Override
     public void removeSession(WebSocketSession session) {
+        Objects.requireNonNull(session, "session cannot be null");
         sessions.remove(session);
     }
 
     @Override
     public void broadcast(ChatMessage message) {
+        Objects.requireNonNull(message, "message cannot be null");
         try {
             TextMessage textMessage = new TextMessage(mapper.writeValueAsString(message));
             for (WebSocketSession session : sessions) {
