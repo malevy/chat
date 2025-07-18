@@ -1,9 +1,11 @@
-package net.malevy.chatserver.websockets;
+package net.malevy.chatserver.infrastructure.adapters.websocket;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import net.malevy.chatserver.models.ChatMessage;
-import net.malevy.chatserver.messaging.BroadcastService;
+import net.malevy.chatserver.application.usecases.JoinChatUseCase;
+import net.malevy.chatserver.application.usecases.LeaveChatUseCase;
+import net.malevy.chatserver.application.usecases.SendMessageUseCase;
+import net.malevy.chatserver.domain.entities.ChatMessage;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -19,49 +21,46 @@ import java.util.Objects;
 public class WebsocketConnectionHandler extends TextWebSocketHandler {
 
     private final ObjectMapper mapper;
-    private final SessionManager sessionManager;
-    private final BroadcastService broadcastService;
+    private final JoinChatUseCase joinChatUseCase;
+    private final LeaveChatUseCase leaveChatUseCase;
+    private final SendMessageUseCase sendMessageUseCase;
 
-    public WebsocketConnectionHandler(ObjectMapper mapper, SessionManager sessionManager, BroadcastService broadcastService) {
+    public WebsocketConnectionHandler(
+            ObjectMapper mapper,
+            JoinChatUseCase joinChatUseCase,
+            LeaveChatUseCase leaveChatUseCase,
+            SendMessageUseCase sendMessageUseCase
+    ) {
         this.mapper = mapper;
-        this.sessionManager = sessionManager;
-        this.broadcastService = broadcastService;
+        this.joinChatUseCase = joinChatUseCase;
+        this.leaveChatUseCase = leaveChatUseCase;
+        this.sendMessageUseCase = sendMessageUseCase;
     }
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         super.afterConnectionEstablished(session);
         String username = Objects.requireNonNullElse(getUsernameFromUri(session.getUri()), "{unknown}");
-        session.getAttributes().put("username", username);
-        log.info("{} ({}) connected", username, session.getId());
-        sessionManager.addSession(session);
-
-        // Send system message to all clients about user joining
-        broadcastService.broadcastMessage(ChatMessage.createSystemMessage(username + " joined the chat"));
+        joinChatUseCase.run(session,  username);
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         super.afterConnectionClosed(session, status);
-        final var username = session.getAttributes().get("username");
-        sessionManager.removeSession(session);
-        log.info("{} ({}) disconnected", username, session.getId());
-        
-        // Send system message to remaining clients about user leaving
-        broadcastService.broadcastMessage(ChatMessage.createSystemMessage(username + " left the chat"));
+        leaveChatUseCase.run(session);
     }
 
     @Override
     public void handleTextMessage(WebSocketSession session, TextMessage receivedMessage) throws Exception {
         super.handleTextMessage(session, receivedMessage);
+
         log.info("received {} bytes from {}", receivedMessage.getPayloadLength(), session.getId());
 
         final ChatMessage received = mapper.readValue(receivedMessage.getPayload(), ChatMessage.class);
-        final var message = ChatMessage.populateFrom(received, (String) session.getAttributes().get("username"));
-        broadcastService.broadcastMessage(message);
+        sendMessageUseCase.run(session,  received);
     }
 
-    private String getUsernameFromUri(URI uri) {
+    public static String getUsernameFromUri(URI uri) {
         final var components = UriComponentsBuilder.fromUri(uri).build();
         if (!components.getQueryParams().containsKey("username")) return null;
         return components.getQueryParams().get("username").getFirst();
