@@ -22,7 +22,7 @@ public class LocalMessageBroadcaster implements MessageBroadcaster {
 
     @Override
     public void broadcast(ChatMessage message) {
-        Objects.requireNonNull(message, () -> "message cannot be null");
+        Objects.requireNonNull(message, "message cannot be null");
         sessionManager.broadcast(message);
         log.debug("publishing message id: {}", message.getId());
     }
