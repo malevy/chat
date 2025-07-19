@@ -61,6 +61,7 @@ public class WebsocketConnectionHandler extends TextWebSocketHandler {
     }
 
     public static String getUsernameFromUri(URI uri) {
+        Objects.requireNonNull(uri, "must provide a valid URI");
         final var components = UriComponentsBuilder.fromUri(uri).build();
         if (!components.getQueryParams().containsKey("username")) return null;
         return components.getQueryParams().get("username").getFirst();
