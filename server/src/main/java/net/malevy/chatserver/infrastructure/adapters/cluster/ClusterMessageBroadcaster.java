@@ -10,6 +10,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
+
 @Component
 @Slf4j
 @Profile("cluster")
@@ -33,6 +35,7 @@ public class ClusterMessageBroadcaster implements MessageBroadcaster {
 
     @Override
     public void broadcast(ChatMessage message) {
+        Objects.requireNonNull(message, "message cannot be null");
         try {
             message.setNodeId(nodeIdentifier.getId());
             sessionManager.broadcast(message);
