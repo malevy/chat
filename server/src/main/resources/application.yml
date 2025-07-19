@@ -1,0 +1,32 @@
+spring:
+  profiles:
+#    active: default
+    active: cluster
+  application:
+    name: server
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+
+# Actuator endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: when-authorized
+
+
+---
+# Cluster profile configuration
+spring:
+  config:
+    activate:
+      on-profile: cluster
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      timeout: 2000ms
