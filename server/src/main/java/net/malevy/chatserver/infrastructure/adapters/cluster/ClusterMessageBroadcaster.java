@@ -37,10 +37,10 @@ public class ClusterMessageBroadcaster implements MessageBroadcaster {
     public void broadcast(ChatMessage message) {
         Objects.requireNonNull(message, "message cannot be null");
         try {
-            message.setNodeId(nodeIdentifier.getId());
+            message.setNodeId(nodeIdentifier.id());
             sessionManager.broadcast(message);
             redisTemplate.convertAndSend(channelTopic.getTopic(), message);
-            log.debug("Published message to cluster from nodeId {}", nodeIdentifier.getId());
+            log.debug("Published message to cluster from nodeId {}", nodeIdentifier.id());
         } catch (Exception e) {
             log.error("Error publishing message to Redis cluster", e);
         }

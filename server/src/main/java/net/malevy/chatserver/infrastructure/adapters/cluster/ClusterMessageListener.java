@@ -46,8 +46,8 @@ class ClusterMessageListener {
             ChatMessage chatMessage = objectMapper.readValue(message.getBody(), ChatMessage.class);
 
             // Skip messages from this node to avoid infinite loop
-            if (nodeIdentifier.getId().equals(chatMessage.getNodeId())) {
-                log.debug("Skipping message from same node: {}", nodeIdentifier.getId());
+            if (nodeIdentifier.id().equals(chatMessage.getNodeId())) {
+                log.debug("Skipping message from same node: {}", nodeIdentifier.id());
                 return;
             }
 
