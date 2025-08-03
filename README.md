@@ -24,7 +24,7 @@ This project explores load balancing WebSocket communication using:
 
 ```bash
 cd server
-./mvnw spring-boot:run
+./gradlew bootRun
 ```
 
 The server will start on `http://localhost:8080` with WebSocket endpoint at `ws://localhost:8080/chat`
@@ -45,7 +45,7 @@ The client will start on `http://localhost:5173` (Vite dev server)
 
 ```bash
 cd server
-./mvnw clean package
+./gradlew build
 ```
 
 **Client:**
@@ -147,7 +147,7 @@ VITE_WEBSOCKET_URL=ws://localhost:8080/chat
 -   Spring Data Redis for clustering
 -   Spring Boot Actuator for monitoring
 -   Jackson for JSON serialization
--   Java 21 and Maven
+-   Java 21 and Gradle
 
 ### Frontend
 
