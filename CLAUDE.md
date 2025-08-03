@@ -17,20 +17,20 @@ All commands should be run from the `server/` directory:
 ### Build and Run
 ```bash
 cd server
-./mvnw clean compile
-./mvnw spring-boot:run
+./gradlew compileJava
+./gradlew bootRun
 ```
 
 ### Testing
 ```bash
 cd server
-./mvnw test
+./gradlew test
 ```
 
 ### Package
 ```bash
 cd server
-./mvnw clean package
+./gradlew build
 ```
 
 ## Architecture
@@ -41,13 +41,13 @@ cd server
   - Spring WebSocket (real-time communication)
   - Spring Boot DevTools (development hot reload)
   - Lombok (boilerplate code reduction)
-- **Build Tool**: Maven with wrapper scripts
+- **Build Tool**: Gradle with wrapper scripts
 - **Main Class**: `ServerApplication.java` - standard Spring Boot entry point
 - **Package Structure**: `net.malevy.chatserver`
 
 ## Development Notes
 
-- Uses Maven wrapper (`mvnw`/`mvnw.cmd`) - no need to install Maven separately
+- Uses Gradle wrapper (`gradlew`/`gradlew.bat`) - no need to install Gradle separately
 - Lombok is configured for annotation processing
 - Spring Boot DevTools enables automatic restart during development
 - Application name is configured as "server" in `application.properties`
